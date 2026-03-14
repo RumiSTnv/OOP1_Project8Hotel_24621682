@@ -1,4 +1,4 @@
-package Hotel.Person;
+package bg.tu_varna.sit.f24621682.OOP1project.Hotel.Person;
 
 public class Guest {
     private String guestName;

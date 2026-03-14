@@ -1,11 +1,11 @@
-package Hotel.Rooms.Classes;
+package bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Classes;
 
-import Hotel.Rooms.Enum.RoomStatus;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Enum.RoomStatus;
 
 public class Room {
-    private int roomNumber;
-    private int numberOfBeds;
-    private RoomStatus roomStatus;
+    private final int roomNumber;
+    private final int numberOfBeds;
+    private final RoomStatus roomStatus;
 
     public Room(int roomNumber, int numberOfBeds) {
         this.roomNumber = roomNumber;
@@ -20,4 +20,5 @@ public class Room {
     public int getNumberOfBeds() {
         return numberOfBeds;
     }
+
 }
