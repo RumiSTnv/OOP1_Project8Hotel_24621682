@@ -5,7 +5,7 @@ import bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Enum.RoomStatus;
 public class Room {
     private final int roomNumber;
     private final int numberOfBeds;
-    private final RoomStatus roomStatus;
+    private RoomStatus roomStatus;
 
     public Room(int roomNumber, int numberOfBeds) {
         this.roomNumber = roomNumber;
@@ -19,6 +19,14 @@ public class Room {
 
     public int getNumberOfBeds() {
         return numberOfBeds;
+    }
+
+    public RoomStatus getRoomStatus() {
+        return roomStatus;
+    }
+
+    public void setRoomStatus(RoomStatus roomStatus) {
+        this.roomStatus = roomStatus;
     }
 
 }

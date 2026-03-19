@@ -3,17 +3,18 @@ package bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.Person.Guest;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Reservation {
-    private String roomNumber;
-    private String startDate;
-    private String endDate;
+    private int roomNumber;
+    private Date startDate;
+    private Date endDate;
     private String note;
     private List<Guest> guests;
     private int guestNumber;
 
-    public Reservation(String roomNumber, String startDate, String endDate, String note) {
+    public Reservation(int roomNumber, Date startDate, Date endDate, String note, int guestNumber) {
         this.roomNumber = roomNumber;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -22,16 +23,16 @@ public class Reservation {
         this.guestNumber = guestNumber;
     }
 
-    public String getRoomNumber() {
+    public int getRoomNumber() {
         return roomNumber;
     }
     public void setRoomNumber(String roomNumber) {}
 
-    public String getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public String getEndDate() {
+    public Date getEndDate() {
         return endDate;
     }
 

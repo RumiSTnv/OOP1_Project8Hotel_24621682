@@ -2,11 +2,9 @@ package bg.tu_varna.sit.f24621682.OOP1project.Hotel.FileManaging.FileClasses;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
 
-public abstract class HotelFile {
+public abstract class FileCommands {
     protected boolean isOpen;
     protected String filePath;
     protected BufferedReader bufferedReader;
@@ -56,4 +54,5 @@ public abstract class HotelFile {
         }
 
     }
+
 }

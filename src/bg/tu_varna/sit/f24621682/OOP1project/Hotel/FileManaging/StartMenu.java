@@ -1,15 +1,18 @@
 package bg.tu_varna.sit.f24621682.OOP1project.Hotel.FileManaging;
 
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.FileManaging.FileClasses.ReservationFile;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.FileManaging.FileClasses.FreeRoomsFileCommands;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.FileManaging.FileClasses.ReservationFileCommands;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Classes.Room;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Reservation;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Classes.RoomManaging;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class StartMenu {
-    private ReservationFile reservationFile = new ReservationFile();
+    private ReservationFileCommands reservationFile = new ReservationFileCommands();
+    private FreeRoomsFileCommands freeRoomsFile = new FreeRoomsFileCommands();
+    private RoomManaging roomManaging = new RoomManaging();
     private List<Room> rooms = new ArrayList<>();
     private boolean fileLoaded = false;
 
@@ -22,9 +25,13 @@ public class StartMenu {
             String command = scanner.next();
 
             if (command.equals("open")) {
-                String path = scanner.next();
+                String reservationFilePath = scanner.next();
+                scanner.nextLine();
+                String freeRoomsFlePath = scanner.next();
+
                 try {
-                    reservationFile.open(path);
+                    reservationFile.open(reservationFilePath);
+                    freeRoomsFile.open(freeRoomsFlePath);
                     fileLoaded = true;
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
@@ -36,6 +43,7 @@ public class StartMenu {
                     continue;
                 }
                 reservationFile.close();
+                freeRoomsFile.close();
                 fileLoaded = false;
 
             } else if (command.equals("save")) {
@@ -43,22 +51,34 @@ public class StartMenu {
                     System.out.println("File not loaded");
                 }
                 reservationFile.save();
+                freeRoomsFile.save();
 
             } else if (command.equals("saveas")) {
-                String newPath = scanner.next();
+                String newReservationFilePath = scanner.next();
+                String newFreeRoomsFilePath = scanner.next();
+
                 if (!fileLoaded) {
                     System.out.println("File not loaded");
                 }
-                reservationFile.saveAs(newPath);
+                reservationFile.saveAs(newReservationFilePath);
+                freeRoomsFile.saveAs(newFreeRoomsFilePath);
 
             } else if (command.equals("checkin")) {
                 if (!fileLoaded) {
                     System.out.println("File not loaded");
                 }
-                Room room = new Room(209, 4);
-                reservationFile.checkIn(scanner,room);
+                reservationFile.checkIn(scanner, roomManaging, freeRoomsFile);
 
-            } else if(command.equals("help")) {
+            } else if (command.equals("availability")) {
+                if (!fileLoaded) {
+                    System.out.println("File not loaded");
+                }
+
+                scanner.nextLine();
+                freeRoomsFile.availability(reservationFile, scanner);
+            }
+
+            else if(command.equals("help")) {
                 printHelp();
             }
 
