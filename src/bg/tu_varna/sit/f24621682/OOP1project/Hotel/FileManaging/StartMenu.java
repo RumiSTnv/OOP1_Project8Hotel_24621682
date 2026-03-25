@@ -22,22 +22,39 @@ public class StartMenu {
 
         while (true) {
             System.out.print("> ");
-            String command = scanner.next();
+            String command = scanner.nextLine();
+            String[] parts = command.split(" ");
+            String commandName = parts[0];
 
-            if (command.equals("open")) {
-                String reservationFilePath = scanner.next();
-                scanner.nextLine();
-                String freeRoomsFlePath = scanner.next();
+            if (commandName.equals("open")) {
+                if (parts.length < 2) {
+                    System.out.println("Usage: open <file>");
+                    continue;
+                }
+
+                String filePath = parts[1];
 
                 try {
-                    reservationFile.open(reservationFilePath);
-                    freeRoomsFile.open(freeRoomsFlePath);
+                    if (filePath.contains("reservation")) {
+                        reservationFile.open(filePath);
+                        System.out.println("Reservations file opened");
+                    }
+                    else if (filePath.contains("free")) {
+                        freeRoomsFile.open(filePath, reservationFile, roomManaging);
+                        System.out.println("Free rooms file opened");
+                    }
+                    else {
+                        System.out.println("Unknown file type");
+                        continue;
+                    }
+
                     fileLoaded = true;
+
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
 
-            } else if (command.equals("close")) {
+            } else if (commandName.equals("close")) {
                 if (!fileLoaded) {
                     System.out.println("File not loaded");
                     continue;
@@ -46,14 +63,14 @@ public class StartMenu {
                 freeRoomsFile.close();
                 fileLoaded = false;
 
-            } else if (command.equals("save")) {
+            } else if (commandName.equals("save")) {
                 if (!fileLoaded) {
                     System.out.println("File not loaded");
                 }
                 reservationFile.save();
                 freeRoomsFile.save();
 
-            } else if (command.equals("saveas")) {
+            } else if (commandName.equals("saveas")) {
                 String newReservationFilePath = scanner.next();
                 String newFreeRoomsFilePath = scanner.next();
 
@@ -63,26 +80,27 @@ public class StartMenu {
                 reservationFile.saveAs(newReservationFilePath);
                 freeRoomsFile.saveAs(newFreeRoomsFilePath);
 
-            } else if (command.equals("checkin")) {
+            } else if (commandName.equals("checkin")) {
                 if (!fileLoaded) {
                     System.out.println("File not loaded");
+                    continue;
                 }
                 reservationFile.checkIn(scanner, roomManaging, freeRoomsFile);
 
-            } else if (command.equals("availability")) {
+            } else if (commandName.equals("availability")) {
                 if (!fileLoaded) {
                     System.out.println("File not loaded");
                 }
 
                 scanner.nextLine();
-                freeRoomsFile.availability(reservationFile, scanner);
+                freeRoomsFile.availability(reservationFile, roomManaging, scanner);
             }
 
-            else if(command.equals("help")) {
+            else if(commandName.equals("help")) {
                 printHelp();
             }
 
-            else if (command.equals("exit")) {
+            else if (commandName.equals("exit")) {
                 break;
 
             } else {
