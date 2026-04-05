@@ -9,7 +9,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class FreeRoomsFileCommands extends FileCommands {
+public class FreeRoomsFileCommands {
 
     private List<Room> freeRooms;
 
@@ -33,7 +33,7 @@ public class FreeRoomsFileCommands extends FileCommands {
         room.setRoomStatus(RoomStatus.OCCUPIED);
     }
 
-    public void open(String path, ReservationFileCommands reservationFile, RoomManaging roomManaging) {
+    /*public void open(String path, ReservationFileCommands reservationFile, RoomManaging roomManaging) {
         try {
             File file = new File(path);
             if (!file.exists()) {
@@ -130,5 +130,5 @@ public class FreeRoomsFileCommands extends FileCommands {
         } catch (Exception e) {
             System.out.println("Invalid date format!");
         }
-    }
+    }*/
 }

@@ -63,10 +63,9 @@ public class ReservationFileCommands extends FileCommands {
         }
     }
 
-    public void checkIn(Scanner scanner, RoomManaging roomManaging, FreeRoomsFileCommands freeRoomsFile) {
+    public void checkIn(Scanner scanner, RoomManaging roomManaging) {
         if (!isOpen) {
             System.out.println("File is not open!");
-            scanner.nextLine();
             return;
         }
 
@@ -74,7 +73,6 @@ public class ReservationFileCommands extends FileCommands {
             int roomNumber = scanner.nextInt();
             String start = scanner.next();
             String end = scanner.next();
-
             String note = scanner.nextLine().trim();
 
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -88,23 +86,75 @@ public class ReservationFileCommands extends FileCommands {
                 return;
             }
 
-            if (room.getRoomStatus() == RoomStatus.OCCUPIED) {
-                System.out.println("Room is occupied");
-                return;
+            // проверка дали е заета за този период
+            for (Reservation res : reservations) {
+                if (res.getRoomNumber() == roomNumber) {
+
+                    if (!(endDate.before(res.getStartDate()) ||
+                            startDate.after(res.getEndDate()))) {
+
+                        System.out.println("Room is occupied for this period!");
+                        return;
+                    }
+                }
             }
 
             int guests = room.getNumberOfBeds();
-            Reservation reservation = new Reservation(roomNumber, startDate, endDate, note, guests);
-            reservations.add(reservation);
 
-            freeRoomsFile.removeFreeRoom(room);
-            room.setRoomStatus(RoomStatus.OCCUPIED);
+            reservations.add(new Reservation(roomNumber, startDate, endDate, note, guests));
 
             save();
             System.out.println("Reservation added!");
 
         } catch (Exception e) {
             System.out.println("Invalid input!");
+        }
+    }
+
+    public void availability(RoomManaging roomManaging, Scanner scanner) {
+        if (!isOpen) {
+            System.out.println("File is not open!");
+            return;
+        }
+
+        try {
+            System.out.println("Enter date (yyyy-MM-dd) or press Enter for today:");
+            String input = scanner.nextLine();
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date checkDate = input.isEmpty()
+                    ? new Date()
+                    : dateFormat.parse(input);
+
+            boolean found = false;
+
+            for (Room room : roomManaging.getAllRooms()) {
+                boolean isOccupied = false;
+
+                for (Reservation res : reservations) {
+                    if (res.getRoomNumber() == room.getRoomNumber()) {
+
+                        if (!checkDate.before(res.getStartDate()) &&
+                                !checkDate.after(res.getEndDate())) {
+
+                            isOccupied = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!isOccupied) {
+                    System.out.println(room.getRoomNumber() + " " + room.getNumberOfBeds());
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                System.out.println("No available rooms.");
+            }
+
+        } catch (Exception e) {
+            System.out.println("Invalid date format!");
         }
     }
 
