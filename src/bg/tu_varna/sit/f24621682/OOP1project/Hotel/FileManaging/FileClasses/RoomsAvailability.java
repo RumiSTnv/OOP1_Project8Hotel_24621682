@@ -5,15 +5,13 @@ import bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Classes.RoomManaging;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Enum.RoomStatus;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Reservation;
 
-import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class FreeRoomsFileCommands {
-
+public class RoomsAvailability {
     private List<Room> freeRooms;
 
-    public FreeRoomsFileCommands() {
+    public RoomsAvailability() {
         freeRooms = new ArrayList<>();
     }
 
@@ -33,62 +31,11 @@ public class FreeRoomsFileCommands {
         room.setRoomStatus(RoomStatus.OCCUPIED);
     }
 
-    /*public void open(String path, ReservationFileCommands reservationFile, RoomManaging roomManaging) {
-        try {
-            File file = new File(path);
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-
-            this.filePath = path;
-            isOpen = true;
-            freeRooms.clear();
-
-            for (Room room : roomManaging.getAllRooms()) {
-                boolean isReserved = false;
-
-                for (Reservation res : reservationFile.getReservations()) {
-                    if (res.getRoomNumber() == room.getRoomNumber()) {
-                        isReserved = true;
-                        break;
-                    }
-                }
-
-                if (!isReserved) {
-                    room.setRoomStatus(RoomStatus.AVAILABLE);
-                    freeRooms.add(room);
-                }
-            }
-
-            save();
-            System.out.println("Free rooms loaded: " + freeRooms.size());
-
-        } catch (Exception e) {
-            System.out.println("Error loading free rooms file");
-        }
+    public void clearFreeRooms() {
+        freeRooms.clear();
     }
 
-    @Override
-    public void save() {
-        if (!isOpen) return;
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            for (Room room : freeRooms) {
-                writer.write(room.getRoomNumber() + " " + room.getNumberOfBeds());
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            System.out.println("Error saving free rooms file");
-        }
-    }
-
-    @Override
-    public void open(String path) {
-    }
-
-    public void availability(ReservationFileCommands reservationFile,
-                             RoomManaging roomManaging,
-                             Scanner scanner) {
+    public void availability(ReservationsManaging reservationFile, RoomManaging roomManaging, Scanner scanner) {
         try {
             System.out.println("Enter date (yyyy-MM-dd) or press Enter for today:");
             String input = scanner.nextLine();
@@ -130,5 +77,5 @@ public class FreeRoomsFileCommands {
         } catch (Exception e) {
             System.out.println("Invalid date format!");
         }
-    }*/
+    }
 }

@@ -1,14 +1,18 @@
 package bg.tu_varna.sit.f24621682.OOP1project.Hotel.FileManaging;
 
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.FileManaging.FileClasses.ReservationFileCommands;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.FileManaging.FileClasses.FileCommands;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.FileManaging.FileClasses.ReservationsManaging;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.FileManaging.FileClasses.RoomsAvailability;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Classes.RoomManaging;
 
 import java.util.Scanner;
 
 public class StartMenu {
 
-    private ReservationFileCommands reservationFile = new ReservationFileCommands();
-    private RoomManaging roomManaging = new RoomManaging();
+    ReservationsManaging reservationFile = new ReservationsManaging();
+    RoomManaging roomManaging = new RoomManaging();
+    FileCommands fileCommands = new FileCommands();
+    RoomsAvailability roomsAvailability = new RoomsAvailability();
     private boolean fileLoaded = false;
 
     public void start() {
@@ -28,7 +32,7 @@ public class StartMenu {
                     continue;
                 }
 
-                reservationFile.open(parts[1]);
+                fileCommands.open(parts[1], roomManaging);
                 fileLoaded = true;
             }
             else if (commandName.equals("close")) {
@@ -38,7 +42,7 @@ public class StartMenu {
                     continue;
                 }
 
-                reservationFile.close();
+                fileCommands.close();
                 fileLoaded = false;
             }
             else if (commandName.equals("save")) {
@@ -48,7 +52,7 @@ public class StartMenu {
                     continue;
                 }
 
-                reservationFile.save();
+                fileCommands.save();
             }
             else if (commandName.equals("saveas")) {
 
@@ -62,7 +66,7 @@ public class StartMenu {
                     continue;
                 }
 
-                reservationFile.saveAs(parts[1]);
+                fileCommands.saveAs(parts[1]);
             }
             else if (commandName.equals("checkin")) {
 
@@ -70,10 +74,27 @@ public class StartMenu {
                     System.out.println("File not loaded");
                     continue;
                 }
-
-                System.out.println("Enter: <roomNumber> <startDate> <endDate> <note>");
-                reservationFile.checkIn(scanner, roomManaging);
+                fileCommands.getReservations().checkIn(scanner, roomManaging, fileCommands);
             }
+            else if(commandName.equals("checkout")) {
+                if (!fileLoaded) {
+                    System.out.println("File not loaded");
+                    continue;
+                }
+
+               /* Scanner scanner = new Scanner(System.in);
+                System.out.print("Enter room number to checkout: ");
+                int roomNumber;
+
+                try {
+                    roomNumber = Integer.parseInt(scanner.nextLine());
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid room number!");
+                    continue;
+                }
+
+                fileCommands.getReservations().removeReservation(roomNumber, fileCommands, roomManaging);
+            */}
             else if (commandName.equals("availability")) {
 
                 if (!fileLoaded) {
@@ -81,10 +102,11 @@ public class StartMenu {
                     continue;
                 }
 
-                reservationFile.availability(roomManaging, scanner);
+                fileCommands.getFreeRooms().availability(fileCommands.getReservations(),
+                        roomManaging, scanner);
             }
             else if (commandName.equals("help")) {
-                printHelp();
+                fileCommands.help();
             }
             else if (commandName.equals("exit")) {
                 System.out.println("Exiting...");
@@ -94,16 +116,5 @@ public class StartMenu {
                 System.out.println("Unknown command");
             }
         }
-    }
-
-    private void printHelp() {
-        System.out.println("open <file> - open reservations file");
-        System.out.println("save - save file");
-        System.out.println("saveas <file> - save file with new path");
-        System.out.println("close - close file");
-        System.out.println("checkin - add reservation");
-        System.out.println("availability - show free rooms");
-        System.out.println("help - show commands");
-        System.out.println("exit - exit program");
     }
 }
