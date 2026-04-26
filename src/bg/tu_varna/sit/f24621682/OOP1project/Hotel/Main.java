@@ -1,6 +1,6 @@
 package bg.tu_varna.sit.f24621682.OOP1project.Hotel;
 
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.FileManaging.StartMenu;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.StartMenu;
 
 
 public class Main {

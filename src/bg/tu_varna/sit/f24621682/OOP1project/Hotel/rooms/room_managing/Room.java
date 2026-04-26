@@ -1,6 +1,6 @@
-package bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Classes;
+package bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing;
 
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Enum.RoomStatus;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_enum.RoomStatus;
 
 public class Room {
     private final int roomNumber;

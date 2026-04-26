@@ -1,10 +1,8 @@
-package bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Classes;
-
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Enum.RoomStatus;
+package bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing;
 
 import java.util.ArrayList;
 import java.util.List;
-
+// клас, който съдържа списък с ВСИЧКИ стаи
 public class RoomManaging {
     private List<Room> allRooms;
 
@@ -27,6 +25,7 @@ public class RoomManaging {
         return allRooms;
     }
 
+    // търси стая по номер
     public Room findRoomsByRoomNumber(int roomNumber) {
         for (Room room : allRooms) {
             if(room.getRoomNumber() == roomNumber) {

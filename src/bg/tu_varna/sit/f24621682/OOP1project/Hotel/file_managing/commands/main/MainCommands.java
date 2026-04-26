@@ -1,16 +1,17 @@
-package bg.tu_varna.sit.f24621682.OOP1project.Hotel.FileManaging.FileClasses;
+package bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.main;
 
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.FileManaging.FileExceptions.FileErrorException;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Classes.Room;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Classes.RoomManaging;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Enum.RoomStatus;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Reservation;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.reservations.ReservationsManaging;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.Room;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.RoomManaging;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.RoomsAvailability;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_enum.RoomStatus;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.reservations.Reservation;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class FileCommands {
+public class MainCommands {
     protected boolean isOpen;
     protected String filePath;
     protected BufferedReader bufferedReader;

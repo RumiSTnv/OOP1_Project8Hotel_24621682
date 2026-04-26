@@ -1,18 +1,22 @@
-package bg.tu_varna.sit.f24621682.OOP1project.Hotel.FileManaging;
+package bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing;
 
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.FileManaging.FileClasses.FileCommands;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.FileManaging.FileClasses.ReservationsManaging;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.FileManaging.FileClasses.RoomsAvailability;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms.Classes.RoomManaging;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.additional.AvailabilityCommand;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.additional.CheckinCommand;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.main.MainCommands;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.reservations.ReservationsManaging;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.RoomsAvailability;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.RoomManaging;
 
 import java.util.Scanner;
 
 public class StartMenu {
 
-    ReservationsManaging reservationFile = new ReservationsManaging();
+    ReservationsManaging reservationsManaging = new ReservationsManaging();
     RoomManaging roomManaging = new RoomManaging();
-    FileCommands fileCommands = new FileCommands();
+    MainCommands mainCommands = new MainCommands();
     RoomsAvailability roomsAvailability = new RoomsAvailability();
+    AvailabilityCommand availabilityCommand = new AvailabilityCommand();
+    CheckinCommand checkinCommand = new CheckinCommand();
     private boolean fileLoaded = false;
 
     public void start() {
@@ -32,7 +36,7 @@ public class StartMenu {
                     continue;
                 }
 
-                fileCommands.open(parts[1], roomManaging);
+                mainCommands.open(parts[1], roomManaging);
                 fileLoaded = true;
             }
             else if (commandName.equals("close")) {
@@ -42,7 +46,7 @@ public class StartMenu {
                     continue;
                 }
 
-                fileCommands.close();
+                mainCommands.close();
                 fileLoaded = false;
             }
             else if (commandName.equals("save")) {
@@ -52,7 +56,7 @@ public class StartMenu {
                     continue;
                 }
 
-                fileCommands.save();
+                mainCommands.save();
             }
             else if (commandName.equals("saveas")) {
 
@@ -66,7 +70,7 @@ public class StartMenu {
                     continue;
                 }
 
-                fileCommands.saveAs(parts[1]);
+                mainCommands.saveAs(parts[1]);
             }
             else if (commandName.equals("checkin")) {
 
@@ -74,7 +78,7 @@ public class StartMenu {
                     System.out.println("File not loaded");
                     continue;
                 }
-                fileCommands.getReservations().checkIn(scanner, roomManaging, fileCommands);
+                checkinCommand.checkIn(scanner, roomManaging, reservationsManaging, mainCommands, roomsAvailability);
             }
             else if(commandName.equals("checkout")) {
                 if (!fileLoaded) {
@@ -102,11 +106,12 @@ public class StartMenu {
                     continue;
                 }
 
-                fileCommands.getFreeRooms().availability(fileCommands.getReservations(),
-                        roomManaging, scanner);
+                availabilityCommand.availability(mainCommands.getReservations(),
+                        roomManaging, scanner, roomsAvailability);
+
             }
             else if (commandName.equals("help")) {
-                fileCommands.help();
+                mainCommands.help();
             }
             else if (commandName.equals("exit")) {
                 System.out.println("Exiting...");

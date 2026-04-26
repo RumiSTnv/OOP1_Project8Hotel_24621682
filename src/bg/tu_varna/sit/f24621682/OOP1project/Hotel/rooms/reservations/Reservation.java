@@ -1,6 +1,6 @@
-package bg.tu_varna.sit.f24621682.OOP1project.Hotel.Rooms;
+package bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.reservations;
 
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.Person.Guest;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.person.Guest;
 
 import java.util.ArrayList;
 import java.util.Date;
