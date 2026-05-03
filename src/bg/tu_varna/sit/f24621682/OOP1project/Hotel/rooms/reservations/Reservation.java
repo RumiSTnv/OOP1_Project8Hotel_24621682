@@ -1,43 +1,20 @@
 package bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.reservations;
 
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.person.Guest;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.PeriodBooking;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Reservation {
-    private int roomNumber;
-    private Date startDate;
-    private Date endDate;
-    private String note;
+public class Reservation extends PeriodBooking {
     private List<Guest> guests;
     private int guestNumber;
 
     public Reservation(int roomNumber, Date startDate, Date endDate, String note, int guestNumber) {
-        this.roomNumber = roomNumber;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.note = note;
+        super(roomNumber, startDate, endDate, note);
         this.guests =  new ArrayList<>();
         this.guestNumber = guestNumber;
-    }
-
-    public int getRoomNumber() {
-        return roomNumber;
-    }
-    public void setRoomNumber(String roomNumber) {}
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public String getNote() {
-        return note;
     }
 
     public List<Guest> getGuests() {

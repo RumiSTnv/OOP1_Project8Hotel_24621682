@@ -4,25 +4,24 @@ import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.main.M
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.exceptions.InvalidDataException;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.exceptions.NotFoundException;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.reservations.ReservationsManaging;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_availability.RoomsUnavailability;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_availability.UnavailablePeriod;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.Room;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.RoomManaging;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_availability.RoomsAvailability;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.reservations.Reservation;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-// клас за командата checkIn
-public class CheckinCommand {
+public class UnavailabilityCommand {
+    public void unavailable(String[] parts,
+                            RoomManaging roomManaging,
+                            ReservationsManaging reservationsManaging, RoomsAvailability roomsAvailability,
+                            MainCommands mainCommands, RoomsUnavailability roomsUnavailability){
 
-    public void checkIn(String[] parts,
-                        RoomManaging roomManaging,
-                        ReservationsManaging reservationsManaging,
-                        MainCommands mainCommands,
-                        RoomsAvailability roomsAvailability) {
         try {
 
-            if (parts.length != 6) {
+            if (parts.length != 5) {
                 throw new InvalidDataException("Invalid input!");
             }
 
@@ -30,7 +29,6 @@ public class CheckinCommand {
             String start = parts[2];
             String end = parts[3];
             String note = parts[4];
-            int guests = Integer.parseInt(parts[5]);
 
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -39,8 +37,9 @@ public class CheckinCommand {
 
             Room room = roomManaging.findRoomsByRoomNumber(roomNumber);
 
-            if (room == null)
+            if (room == null) {
                 throw new NotFoundException("Room not found!");
+            }
 
             if (!reservationsManaging.isRoomOccupied(
                     room, startDate, endDate,
@@ -49,19 +48,16 @@ public class CheckinCommand {
                 throw new NotFoundException("Room occupied!");
             }
 
-            Reservation reservation =
-                    new Reservation(roomNumber, startDate, endDate, note, guests);
+            UnavailablePeriod unavailablePeriod = new UnavailablePeriod(roomNumber, startDate, endDate, note);
 
-            reservationsManaging.addReservation(reservation);
-
+            roomsUnavailability.addUnavailableRooms(unavailablePeriod);
             roomsAvailability.removeFreeRoom(room);
-
             mainCommands.save();
 
-            System.out.println("Reservation added.");
+            System.out.println("Room labeled as 'Unavailable' successfully!");
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 }

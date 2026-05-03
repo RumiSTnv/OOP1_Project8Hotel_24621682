@@ -1,9 +1,11 @@
 package bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.additional;
 
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.exceptions.InvalidDataException;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.exceptions.NotFoundException;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.reservations.ReservationsManaging;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.Room;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.RoomManaging;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.RoomsAvailability;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_availability.RoomsAvailability;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,7 +13,7 @@ import java.util.Scanner;
 
 public class AvailabilityCommand {
 
-    public void availability(ReservationsManaging reservationFile,
+    public void availability(ReservationsManaging reservationsManaging,
                              RoomManaging roomManaging,
                              Scanner scanner, RoomsAvailability roomsAvailability) {
         try {
@@ -24,18 +26,18 @@ public class AvailabilityCommand {
             boolean found = false;
 
             for (Room room : roomManaging.getAllRooms()) {
-                if (roomsAvailability.isRoomFreeByDay(room, checkDate, reservationFile.getReservations())) {
+                if (roomsAvailability.isRoomFreeByDay(room, checkDate, reservationsManaging.getReservations())) {
                     System.out.println(room.getRoomNumber() + " " + room.getNumberOfBeds());
                     found = true;
                 }
             }
 
             if (!found) {
-                System.out.println("No available rooms.");
+                throw new NotFoundException("No available rooms!");
             }
 
         } catch (Exception e) {
-            System.out.println("Invalid date format!");
+            throw new InvalidDataException("Invalid date format!");
         }
     }
 

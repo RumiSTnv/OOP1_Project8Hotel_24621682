@@ -2,9 +2,12 @@ package bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing;
 
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.additional.AvailabilityCommand;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.additional.CheckinCommand;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.additional.CheckoutCommand;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.additional.UnavailabilityCommand;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.main.MainCommands;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.reservations.ReservationsManaging;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.RoomsAvailability;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_availability.RoomsAvailability;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_availability.RoomsUnavailability;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.RoomManaging;
 
 import java.util.Scanner;
@@ -13,10 +16,14 @@ public class StartMenu {
 
     ReservationsManaging reservationsManaging = new ReservationsManaging();
     RoomManaging roomManaging = new RoomManaging();
-    MainCommands mainCommands = new MainCommands();
+    RoomsUnavailability roomsUnavailability = new RoomsUnavailability();
     RoomsAvailability roomsAvailability = new RoomsAvailability();
+
+    MainCommands mainCommands = new MainCommands();
     AvailabilityCommand availabilityCommand = new AvailabilityCommand();
     CheckinCommand checkinCommand = new CheckinCommand();
+    CheckoutCommand checkoutCommand = new CheckoutCommand();
+    UnavailabilityCommand unavailabilityCommand = new UnavailabilityCommand();
     private boolean fileLoaded = false;
 
     public void start() {
@@ -36,7 +43,7 @@ public class StartMenu {
                     continue;
                 }
 
-                mainCommands.open(parts[1], roomManaging);
+                mainCommands.open(parts[1], roomManaging, roomsUnavailability);
                 fileLoaded = true;
             }
             else if (commandName.equals("close")) {
@@ -73,32 +80,27 @@ public class StartMenu {
                 mainCommands.saveAs(parts[1]);
             }
             else if (commandName.equals("checkin")) {
-
                 if (!fileLoaded) {
                     System.out.println("File not loaded");
                     continue;
                 }
-                checkinCommand.checkIn(scanner, roomManaging, reservationsManaging, mainCommands, roomsAvailability);
+                checkinCommand.checkIn(parts, roomManaging, reservationsManaging, mainCommands, roomsAvailability);
             }
-            else if(commandName.equals("checkout")) {
+
+
+            else if (commandName.equals("checkout")) {
                 if (!fileLoaded) {
                     System.out.println("File not loaded");
                     continue;
                 }
 
-               /* Scanner scanner = new Scanner(System.in);
-                System.out.print("Enter room number to checkout: ");
-                int roomNumber;
-
-                try {
-                    roomNumber = Integer.parseInt(scanner.nextLine());
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid room number!");
+                if (parts.length < 2) {
+                    System.out.println("Usage: checkout <room>");
                     continue;
                 }
+                    checkoutCommand.checkOut(parts, roomManaging, reservationsManaging, roomsAvailability, mainCommands);
+            }
 
-                fileCommands.getReservations().removeReservation(roomNumber, fileCommands, roomManaging);
-            */}
             else if (commandName.equals("availability")) {
 
                 if (!fileLoaded) {
@@ -109,6 +111,15 @@ public class StartMenu {
                 availabilityCommand.availability(mainCommands.getReservations(),
                         roomManaging, scanner, roomsAvailability);
 
+            }
+            else if (commandName.equals("unavailable")) {
+                if (!fileLoaded) {
+                    System.out.println("File not loaded");
+                    continue;
+                }
+
+                unavailabilityCommand.unavailable(parts, roomManaging, reservationsManaging, roomsAvailability,
+                        mainCommands, roomsUnavailability);
             }
             else if (commandName.equals("help")) {
                 mainCommands.help();

@@ -1,13 +1,18 @@
 package bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.main;
 
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.exceptions.FileErrorException;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.exceptions.InvalidDataException;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.reservations.ReservationsManaging;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_availability.RoomsUnavailability;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_availability.UnavailablePeriod;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.Room;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.RoomManaging;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.RoomsAvailability;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_availability.RoomsAvailability;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_enum.RoomStatus;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.reservations.Reservation;
 
 import java.io.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -18,6 +23,7 @@ public class MainCommands {
 
     RoomsAvailability freeRooms = new RoomsAvailability();
     ReservationsManaging reservations = new ReservationsManaging();
+    RoomsUnavailability unavailableRooms = new RoomsUnavailability();
 
     public RoomsAvailability getFreeRooms() {
         return freeRooms;
@@ -31,69 +37,85 @@ public class MainCommands {
         return isOpen;
     }
 
-    public void open(String path, RoomManaging roomManaging){
+    public void open(String path, RoomManaging roomManaging, RoomsUnavailability roomsUnavailability) {
         try {
             File file = new File(path);
             if (!file.exists()) {
-                file.createNewFile();
-                System.out.println("File created");
+                boolean created = file.createNewFile();
+                if (created) {
+                    System.out.println("New file created: " + path);
+                } else {
+                    throw new FileErrorException("Failed to create new file: " + path);
+                }
             }
 
             this.filePath = path;
             isOpen = true;
+
             reservations.clearReservations();
             freeRooms.clearFreeRooms();
-
+            roomsUnavailability.clearUnavailableRooms();
 
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line;
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            int section = 0;
 
             while ((line = reader.readLine()) != null) {
-                try {
-                    String[] s = line.split(" ", 5);
+                line = line.trim();
 
+                if (line.isEmpty()) {
+                    section++;
+                    continue;
+                }
+
+                if (section == 0) {
+
+                    String[] parts = line.split(" ");
+                    int roomNumber = Integer.parseInt(parts[0]);
+                    int beds = Integer.parseInt(parts[1]);
+                    Room room = roomManaging.findRoomsByRoomNumber(roomNumber);
+
+                    if (room == null) {
+                        room = new Room(roomNumber, beds);
+                        roomManaging.getAllRooms().add(room);
+                    }
+
+                    freeRooms.addFreeRoom(room);
+                }
+
+                else if (section == 1) {
+
+                    String[] s = line.split(" ", 5);
                     int roomNumber = Integer.parseInt(s[0]);
                     Date start = dateFormat.parse(s[1]);
                     Date end = dateFormat.parse(s[2]);
-
                     String note = s[3];
                     int guests = Integer.parseInt(s[4]);
 
                     reservations.addReservation(
-                            new Reservation(roomNumber, start, end, note, guests)
-                    );
+                            new Reservation(roomNumber, start, end, note, guests));
+                }
 
-                } catch (Exception e) {
-                    System.out.println("Invalid line: " + line);
+                else if (section == 2) {
+
+                    String[] s = line.split(" ", 4);
+                    int roomNumber = Integer.parseInt(s[0]);
+                    Date start = dateFormat.parse(s[1]);
+                    Date end = dateFormat.parse(s[2]);
+                    String note = s[3];
+
+                    roomsUnavailability.addUnavailableRooms(
+                            new UnavailablePeriod(roomNumber, start, end, note));
                 }
             }
 
             reader.close();
 
-            for (Room room : roomManaging.getAllRooms()) {
-                boolean isReserved = false;
-
-                for (Reservation res : reservations.getReservations()) {
-                    if (res.getRoomNumber() == room.getRoomNumber()) {
-                        isReserved = true;
-                        break;
-                    }
-                }
-
-                if (!isReserved) {
-                    room.setRoomStatus(RoomStatus.AVAILABLE);
-                    freeRooms.addFreeRoom(room);
-                }
-            }
-
-            save();
-
-            reader.close();
             System.out.println("File opened");
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -107,7 +129,7 @@ public class MainCommands {
 
             }
         }catch(IOException e){
-            e.printStackTrace();
+            throw new InvalidDataException("Invalid file!");
         }
 
         filePath=null;
@@ -129,6 +151,8 @@ public class MainCommands {
                 writer.newLine();
             }
 
+            writer.newLine();
+
             for(Reservation res : reservations.getReservations()){
                 writer.write(res.getRoomNumber() + " "
                         + dateFormat.format(res.getStartDate()) + " "
@@ -138,9 +162,20 @@ public class MainCommands {
                 writer.newLine();
             }
 
+            writer.newLine();
+
+            for (UnavailablePeriod un : unavailableRooms.getUnavailableRooms()) {
+                writer.write(un.getRoomNumber() + " " +
+                                dateFormat.format(un.getStartDate()) + " " +
+                                dateFormat.format(un.getEndDate()) + " " +
+                                un.getNote());
+
+                writer.newLine();
+            }
+
             writer.close();
         }catch(IOException e){
-            e.printStackTrace();
+            throw new InvalidDataException("Invalid file!");
         }
     }
 
@@ -153,13 +188,18 @@ public class MainCommands {
             filePath = newPath;
             File file = new File(newPath);
             if(!file.exists()){
-                file.createNewFile();
+                boolean created = file.createNewFile();
+                if (created) {
+                    System.out.println("New file created: " + newPath);
+                } else {
+                    throw new FileErrorException("Failed to create new file: " + newPath);
+                }
             }
 
             save();
             System.out.println("File saved");
         }catch(IOException e){
-            e.printStackTrace();
+            throw new InvalidDataException("Invalid file!");
         }
 
     }

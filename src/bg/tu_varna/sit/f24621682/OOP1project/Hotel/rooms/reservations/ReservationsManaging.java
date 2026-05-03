@@ -1,5 +1,6 @@
 package bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.reservations;
 
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_enum.RoomStatus;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.Room;
 
 import java.util.*;
@@ -23,11 +24,11 @@ public class ReservationsManaging {
     }
 
     // проверка за свободна стая в диапазона от дата - до дата
-    public boolean isRoomFreeFromDateToDate(Room room, Date startDate, Date endDate, List<Reservation> reservations) {
+    public boolean isRoomOccupied(Room room, Date startDate, Date endDate, List<Reservation> reservations) {
         for (Reservation r : reservations) {
             if (r.getRoomNumber() == room.getRoomNumber()) {
                 boolean overlaps = !(endDate.before(r.getStartDate()) || startDate.after(r.getEndDate()));
-                if (overlaps) {
+                if (overlaps && room.getRoomStatus() != RoomStatus.AVAILABLE) {
                     return true;
                 }
             }

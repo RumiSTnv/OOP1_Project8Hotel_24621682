@@ -1,7 +1,8 @@
-package bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing;
+package bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_availability;
 
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_enum.RoomStatus;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.reservations.Reservation;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.Room;
 
 import java.util.*;
 
