@@ -1,63 +1,54 @@
 package bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.additional;
 
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.main.MainCommands;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.exceptions.InvalidDataException;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.exceptions.NotFoundException;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.reservations.ReservationsManaging;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_availability.RoomsUnavailability;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.execute.Command;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.execute.HotelState;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.main.SaveCommand;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_availability.UnavailablePeriod;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.Room;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.RoomManaging;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_availability.RoomsAvailability;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class UnavailabilityCommand {
-    public void unavailable(String[] parts,
-                            RoomManaging roomManaging,
-                            ReservationsManaging reservationsManaging, RoomsAvailability roomsAvailability,
-                            MainCommands mainCommands, RoomsUnavailability roomsUnavailability){
+public class UnavailabilityCommand extends Command {
+
+    private final HotelState state;
+    private SaveCommand saveCommand;
+
+    public UnavailabilityCommand(HotelState state) {
+        super("unavailable", "mark room unavailable");
+        this.state = state;
+    }
+
+    @Override
+    public void execute(String input) {
 
         try {
-
-            if (parts.length != 5) {
-                throw new InvalidDataException("Invalid input!");
-            }
+            String[] parts = input.split(" ");
 
             int roomNumber = Integer.parseInt(parts[1]);
-            String start = parts[2];
-            String end = parts[3];
-            String note = parts[4];
 
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
-            Date startDate = format.parse(start);
-            Date endDate = format.parse(end);
+            Date from = format.parse(parts[2]);
+            Date to = format.parse(parts[3]);
+            String note = parts[4];
 
-            Room room = roomManaging.findRoomsByRoomNumber(roomNumber);
+            Room room = state.getRoomManaging().findRoomsByRoomNumber(roomNumber);
 
-            if (room == null) {
-                throw new NotFoundException("Room not found!");
-            }
+            if (room == null) return;
 
-            if (!reservationsManaging.isRoomOccupied(
-                    room, startDate, endDate,
-                    reservationsManaging.getReservations())) {
+            UnavailablePeriod period =
+                    new UnavailablePeriod(roomNumber, from, to, note);
 
-                throw new NotFoundException("Room occupied!");
-            }
+            state.getUnavailableRooms().addUnavailableRooms(period);
+            state.getFreeRooms().removeFreeRoom(room);
 
-            UnavailablePeriod unavailablePeriod = new UnavailablePeriod(roomNumber, startDate, endDate, note);
+         //   saveCommand.execute("");
 
-            roomsUnavailability.addUnavailableRooms(unavailablePeriod);
-            roomsAvailability.removeFreeRoom(room);
-            mainCommands.save();
-
-            System.out.println("Room labeled as 'Unavailable' successfully!");
+            System.out.println("Room marked unavailable.");
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            System.out.println("Error!");
         }
     }
 }

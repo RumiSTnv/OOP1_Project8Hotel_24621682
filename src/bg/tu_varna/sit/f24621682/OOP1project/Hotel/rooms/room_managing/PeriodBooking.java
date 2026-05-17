@@ -2,7 +2,7 @@ package bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing;
 
 import java.util.Date;
 
-public class PeriodBooking {
+public abstract class PeriodBooking {
     private int roomNumber;
     private Date startDate;
     private Date endDate;

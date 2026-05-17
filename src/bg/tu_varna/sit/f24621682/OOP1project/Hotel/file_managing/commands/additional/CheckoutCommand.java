@@ -1,56 +1,56 @@
 package bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.additional;
 
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.main.MainCommands;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.exceptions.InvalidDataException;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.execute.Command;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.execute.HotelState;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.reservations.Reservation;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.reservations.ReservationsManaging;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_enum.RoomStatus;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.Room;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.RoomManaging;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_availability.RoomsAvailability;
 
-public class CheckoutCommand {
+public class CheckoutCommand extends Command {
 
-    public void checkOut(String[] parts,
-                         RoomManaging roomManaging,
-                         ReservationsManaging reservationsManaging,
-                         RoomsAvailability roomsAvailability,
-                         MainCommands mainCommands) {
+    private final HotelState state;
+
+    public CheckoutCommand(HotelState state) {
+        super("checkout", "checkout <room>");
+        this.state = state;
+    }
+
+    @Override
+    public void execute(String input) {
 
         try {
-            if (parts.length < 2) {
-                System.out.println("Usage: checkout <room>");
+            String[] parts = input.split(" ");
+
+            int roomNumber = Integer.parseInt(parts[1]);
+
+            Reservation target = null;
+
+            for (Reservation r : state.getReservations().getReservations()) {
+                if (r.getRoomNumber() == roomNumber) {
+                    target = r;
+                    break;
+                }
+            }
+
+            if (target == null) {
+                System.out.println("Reservation not found.");
                 return;
             }
 
-            int roomNumber = Integer.parseInt(parts[1]);
-            boolean removed = false;
+            state.getReservations().removeReservation(target);
 
-            for (int i = 0; i < reservationsManaging.getReservations().size(); i++) {
-                Reservation reservation = reservationsManaging.getReservations().get(i);
+            Room room = state.getRoomManaging()
+                    .findRoomsByRoomNumber(roomNumber);
 
-             if (reservation.getRoomNumber() == roomNumber) {
-                reservationsManaging.getReservations().remove(i);
-                removed = true;
-
-                Room room = roomManaging.findRoomsByRoomNumber(roomNumber);
-                if (room != null) {
-                    room.setRoomStatus(RoomStatus.AVAILABLE);
-                    roomsAvailability.addFreeRoom(room);
-                }
-
-                break;
+            if (room != null) {
+                room.setRoomStatus(RoomStatus.AVAILABLE);
+                state.getFreeRooms().addFreeRoom(room);
             }
-        }
 
-        if (removed) {
-            mainCommands.save();
-            System.out.println("Room " + roomNumber + " checked out successfully.");
-        } else {
-            throw new InvalidDataException("Reservation for room " + roomNumber + " not found!");
-        }
+            System.out.println("Checkout successful.");
+
         } catch (Exception e) {
-            throw new InvalidDataException("Invalid room number format!");
+            System.out.println("Invalid input!");
         }
     }
 }

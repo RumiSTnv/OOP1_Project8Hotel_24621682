@@ -10,4 +10,9 @@ public class Guest {
     public String getGuestName() {
         return guestName;
     }
+
+    @Override
+    public String toString() {
+        return guestName;
+    }
 }

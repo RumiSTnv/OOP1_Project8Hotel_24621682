@@ -1,62 +1,106 @@
 package bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.additional;
 
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.main.MainCommands;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.execute.Command;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.execute.HotelState;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.exceptions.InvalidDataException;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.exceptions.NotFoundException;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.reservations.ReservationsManaging;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.Room;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.RoomManaging;
-import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_availability.RoomsAvailability;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.person.Guest;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.reservations.Reservation;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_activity.Activity;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_enum.RoomActivity;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.Room;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-// клас за командата checkIn
-public class CheckinCommand {
+public class CheckinCommand extends Command {
 
-    public void checkIn(String[] parts,
-                        RoomManaging roomManaging,
-                        ReservationsManaging reservationsManaging,
-                        MainCommands mainCommands,
-                        RoomsAvailability roomsAvailability) {
+    private final HotelState state;
+
+    public CheckinCommand(HotelState state) {
+        super("checkin", "checkin <room> <from> <to> <note> [guests] [<guest name> <activity>]");
+        this.state = state;
+    }
+
+    @Override
+    public void execute(String input)  {
+
         try {
+            String[] parts = input.split(" ");
 
-            if (parts.length != 6) {
+            if (parts.length < 5) {
                 throw new InvalidDataException("Invalid input!");
             }
 
             int roomNumber = Integer.parseInt(parts[1]);
-            String start = parts[2];
-            String end = parts[3];
-            String note = parts[4];
-            int guests = Integer.parseInt(parts[5]);
 
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
-            Date startDate = format.parse(start);
-            Date endDate = format.parse(end);
+            Date from = format.parse(parts[2]);
+            Date to = format.parse(parts[3]);
+            String note = parts[4];
 
-            Room room = roomManaging.findRoomsByRoomNumber(roomNumber);
+            if (!from.before(to)) {
+                throw new InvalidDataException("Start date must be BEFORE end date!");
+            }
 
-            if (room == null)
+            Room room = state.getRoomManaging().findRoomsByRoomNumber(roomNumber);
+
+            if (room == null) {
                 throw new NotFoundException("Room not found!");
+            }
 
-            if (!reservationsManaging.isRoomOccupied(
-                    room, startDate, endDate,
-                    reservationsManaging.getReservations())) {
+            int guestsCount = (parts.length == 6)
+                    ? Integer.parseInt(parts[5])
+                    : room.getNumberOfBeds();
 
+            if (guestsCount > room.getNumberOfBeds()) {
+                throw new InvalidDataException("Too many guests! Room has only " + room.getNumberOfBeds() + " beds.");
+            }
+
+            if (state.getReservations().isRoomOccupied(
+                    room, from, to, state.getReservations().getReservations())) {
                 throw new NotFoundException("Room occupied!");
             }
 
-            Reservation reservation =
-                    new Reservation(roomNumber, startDate, endDate, note, guests);
+            Reservation reservation = new Reservation(roomNumber, from, to, note, guestsCount);
 
-            reservationsManaging.addReservation(reservation);
+            int currentIndex = 6;
 
-            roomsAvailability.removeFreeRoom(room);
+            for (int i = 0; i < guestsCount  && currentIndex < parts.length; i++) {
 
-            mainCommands.save();
+                if (currentIndex + 1 >= parts.length) {
+                    throw new InvalidDataException("Invalid guest data!");
+                }
+
+                String fullName = parts[currentIndex] + " " + parts[currentIndex + 1];
+
+                reservation.addGuest(new Guest(fullName));
+                currentIndex++;
+
+            }
+
+            while (currentIndex < parts.length)
+            {
+                String raw = parts[currentIndex].toUpperCase();
+
+                RoomActivity type;
+
+                try {
+                    type = RoomActivity.valueOf(raw);
+                } catch (IllegalArgumentException e) {
+                    throw new InvalidDataException("Invalid activity: " + parts[currentIndex]);
+                }
+
+                Activity activity = new Activity(type, from, to);
+
+                reservation.addActivity(activity);
+                currentIndex++;
+            }
+
+            state.getReservations().addReservation(reservation);
+
+            state.getFreeRooms().removeFreeRoom(room);
 
             System.out.println("Reservation added.");
 

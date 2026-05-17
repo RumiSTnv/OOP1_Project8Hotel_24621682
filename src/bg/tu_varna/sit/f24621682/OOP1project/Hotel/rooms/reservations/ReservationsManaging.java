@@ -18,6 +18,10 @@ public class ReservationsManaging {
         reservations.add(reservation);
     }
 
+    public void removeReservation(Reservation reservation) {
+        reservations.remove(reservation);
+    }
+
     // премахване на всички резервации
     public void clearReservations() {
         reservations.clear();
@@ -28,7 +32,7 @@ public class ReservationsManaging {
         for (Reservation r : reservations) {
             if (r.getRoomNumber() == room.getRoomNumber()) {
                 boolean overlaps = !(endDate.before(r.getStartDate()) || startDate.after(r.getEndDate()));
-                if (overlaps && room.getRoomStatus() != RoomStatus.AVAILABLE) {
+                if (overlaps) {
                     return true;
                 }
             }
