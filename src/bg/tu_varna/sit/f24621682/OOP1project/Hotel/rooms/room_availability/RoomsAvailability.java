@@ -6,42 +6,63 @@ import bg.tu_varna.sit.f24621682.OOP1project.Hotel.rooms.room_managing.Room;
 
 import java.util.*;
 
-// клас, който съдържа списък с ВСИЧКИ СВОБОДНИ стаи
-// class, containing list with ALL FREE rooms
+/**
+ * Логически мениджър за администриране на текущо свободния капацитет на хотела.
+ * <p>
+ * Следи за добавянето на налични стаи и проверява статуса им за конкретен ден.
+ * </p>
+ *
+ * @author Румяна Танева
+ * @version 1.0
+ */
 public class RoomsAvailability {
     private List<Room> freeRooms;
 
     public RoomsAvailability() {
         freeRooms = new ArrayList<>();
     }
-
+    /**
+     * Извлича наличните свободни стаи към момента.
+     *
+     * @return списък със свободни стаи
+     */
     public List<Room> getFreeRooms() {
         return freeRooms;
     }
-
-    // добавяне в списъка
-    // adding in the list
+    /**
+     * Добавя стая към свободния фонд и установява статуса ѝ като {@code AVAILABLE}.
+     *
+     * @param room стаята, която се освобождава
+     */
     public void addFreeRoom(Room room) {
         if (!freeRooms.contains(room)) {
             room.setRoomStatus(RoomStatus.AVAILABLE);
             freeRooms.add(room);
         }
     }
-
-    // изтриване от списъка ако стаята се заеме
-    // removing from the list if the room gets occupied / unavailable
+    /**
+     * Премахва стая от свободния списък и превключва статуса ѝ на {@code OCCUPIED}.
+     *
+     * @param room стаята, която се заема или блокира
+     */
     public void removeFreeRoom(Room room) {
         freeRooms.remove(room);
         room.setRoomStatus(RoomStatus.OCCUPIED);
     }
-
-    // изчистване на целия списък
-    // clearing the whole list
+    /**
+     * Изчиства целия списък със свободни стаи.
+     */
     public void clearFreeRooms() {
         freeRooms.clear();
     }
-
-    // проверка на стая дали е свободна на дадена дата
+    /**
+     * Проверява дали дадена стая е свободна в рамките на точно определен календарен ден.
+     *
+     * @param room         стаята за проверка
+     * @param checkDate    датата, която ни интересува
+     * @param reservations списък с текущи резервации за съпоставка
+     * @return {@code true} ако стаята е свободна за този ден; {@code false} в противен случай
+     */
     public boolean isRoomFreeByDay(Room room, Date checkDate, List<Reservation> reservations) {
         for (Reservation res : reservations) {
             if (res.getRoomNumber() == room.getRoomNumber()) {

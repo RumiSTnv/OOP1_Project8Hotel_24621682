@@ -2,21 +2,36 @@ package bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.main;
 
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.execute.Command;
 import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.commands.execute.HotelState;
+import bg.tu_varna.sit.f24621682.OOP1project.Hotel.file_managing.exceptions.FileErrorException;
 
 import java.io.File;
-
+/**
+ * Команда за експортиране на текущото състояние на хотела под нов файлов път.
+ * <p>
+ * Създава нов физически файл, ако не съществува, и пренасочва логиката за запис към него.
+ * </p>
+ *
+ * @author Румяна Танева
+ * @version 1.0
+ */
 public class SaveAsCommand extends Command {
     private final HotelState state;
-
+    /**
+     * Конструира команда за запис като нов файл.
+     *
+     * @param state текущото състояние на хотела
+     */
     public SaveAsCommand(HotelState state) {
         super("saveas", "Saves file as new file");
         this.state = state;
     }
-
+    /**
+     * Променя текущия файлов път в състоянието и извиква SaveCommand.
+     *
+     * @param input новият път/име на файла, въведен от потребителя
+     */
     @Override
     public void execute(String input) {
-        System.out.println("SAVE EXECUTED");
-        System.out.println("FILE: " + state.getFilePath());
         try {
             String[] parts = input.split("\\s+");
 
@@ -33,7 +48,7 @@ public class SaveAsCommand extends Command {
                 if (created) {
                     System.out.println("New file created: " + parts[1]);
                 } else {
-                    throw new RuntimeException("Failed to create file: " + parts[1]);
+                    throw new FileErrorException("Failed to create file: " + parts[1]);
                 }
             }
 
